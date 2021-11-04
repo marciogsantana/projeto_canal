@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+   <body>
+       <style type="text/css">
+         .container {
+          margin: auto;
+          max-width: 1200px;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-between;
+
+          padding-right: 35px;
+          background-color: #2b4c99;
+          color: #fff;
+          font-family: arial;
+          font-size: 22px;
+        }
+           .container ul {
+          list-style-type: none;
+        }
+
+          .container ul li {
+           margin-top: 7px;
+           padding-bottom: 3px;
+           border-bottom: 1px solid #266fc5;
+         }
+
+      </style>
+        <div class="container">
+          <div>
+           <ul>
+               <h4>CLIENTE: {{ codigo }}</h4>
+               <h4> {{ nome }}</h4>
+               <h4>CANAL: <mark>{{ canal }}</mark> </h4>
+               <h4>PRODUTOS COMPRADOS </h4>
+               {% for teste in teste %}
+                 <li>{{teste}}</li>
+                     {% endfor %}
+
+           </ul>
+         </div>
+          <div>
+           <ul>
+               <h4>PRODUTOS COMPRADOS PELO CANAL <mark>{{ canal }}</mark> QUE SEU CLIENTE NÃO ESTA COMPRANDO</h4>
+               {% for previsao in previsao %}
+                 <li>{{previsao}} </li>
+                     {% endfor %}
+               <h4><mark>OPORTUNIDADE DE VENDA!!</mark> </h4>
+           </ul>
+          </div>
+
+        </div>
+
+
+   </body>
+</html>

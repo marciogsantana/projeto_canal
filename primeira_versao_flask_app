@@ -1,0 +1,88 @@
+# A very simple Flask Hello World app for you to get started with...
+
+
+from flask import Flask, request, jsonify, render_template
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import datasets
+import numpy as np
+import sys
+import pandas as pd
+import json
+
+
+app = Flask(__name__,template_folder="/home/marciosantana/mysite/templates")
+
+#trava = 0
+#imprime = 0
+#codigo_cliente = 0
+#nome_cliente = ''
+#lista_cliente = []
+#lista_canal = []
+#lista_unica = []
+#lista_unica_canal = []
+#lista_final = []
+#canal_cliente = ''
+#produto_canal = ''
+saida_erro = "código de cliente não encontrado, informe o código correto"
+
+#canal =  pd.read_excel("/home/marciosantana/mysite/Relatório de venda_testes.xlsx")
+canal = pd.read_csv('/home/marciosantana/mysite/venda_canal.csv', sep= ';',  encoding = 'unicode_escape')
+
+
+@app.route('/')
+def home():
+    return render_template('formulario.html')
+
+
+@app.route('/classifica_iris',methods=['POST','GET'])
+def result():
+    trava = 0
+    imprime = 0
+    codigo_cliente = 0
+    nome_cliente = ''
+    lista_cliente = []
+    lista_canal = []
+    lista_unica = []
+    lista_unica_canal = []
+    lista_final = []
+    canal_cliente = ''
+    produto_canal = ''
+    controle = 0
+    cliente_string = request.args.get("codigo_cliente")
+    indice = int (cliente_string)
+    #indice = 37361
+    #teste = canal.iloc[0]['CLIENTE']
+    for index, row in canal.iterrows():
+        codigo = (row['COD_CLIENTE'])
+        if(indice == codigo):
+            produto = (row['PRODUTO'])
+            codigo_cliente = (row['COD_CLIENTE'])
+            nome_cliente = (row['CLIENTE'])
+            canal_cliente = (row['CANAL'])
+            lista_cliente.append(produto)
+            imprime = 1
+            if(controle == 0):
+                for index, row in canal.iterrows():
+                    if(canal_cliente == (row['CANAL'])):
+                        produto_canal = (row['PRODUTO'])
+                        lista_canal.append(produto_canal)
+                        #lista_unica = list(set(lista_cliente))
+                        #lista_unica_canal = list(set(lista_canal))
+                        #lista_final = list(set(lista_unica_canal) - set(lista_unica))
+                        #teste = canal_cliente
+                        #retorna o resultado para uma pagina html
+                        #return render_template("resultado.html",previsao=teste)
+                        #return json.dumps(list)
+
+
+        else:
+            trava = 0
+
+    if (imprime == 1):
+        lista_unica = list(set(lista_cliente))
+        lista_unica_canal = list(set(lista_canal))
+        lista_final = list(set(lista_unica_canal) - set(lista_unica))
+        return render_template("resultadolista.html",previsao=lista_final, teste=lista_unica, codigo = codigo_cliente, nome = nome_cliente, canal= canal_cliente)
+
+    else:
+        return render_template("resultadon.html",previsao=saida_erro)

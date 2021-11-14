@@ -1,0 +1,121 @@
+# A very simple Flask Hello World app for you to get started with...
+
+
+from flask import Flask, request, jsonify, render_template
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import datasets
+import numpy as np
+import sys
+import pandas as pd
+import json
+from datetime import date
+
+
+app = Flask(__name__,template_folder="/home/marciosantana/mysite/templates")
+
+
+saida_erro = "Código de cliente não encontrado ou sem vendas nos ultimos 3 meses, informe o código correto"
+
+#canal =  pd.read_excel("/home/marciosantana/mysite/Relatório de venda_testes.xlsx")
+canal = pd.read_csv('/home/marciosantana/mysite/vendas_canal_grupo_valores.csv', sep= ';',  encoding = 'unicode_escape')
+
+
+
+@app.route('/')
+def home():
+    return render_template('formulario.html')
+
+
+@app.route('/classifica_iris',methods=['POST','GET'])
+def result():
+    cliente_string = request.args.get("codigo_cliente")
+    codigo_cliente = int (cliente_string)
+    selecao = request.args.get("opcao")
+    canal_cliente = canal.loc[(canal.COD_CLIENTE == codigo_cliente)]
+    if canal_cliente.empty:
+         return render_template("resultadon.html",previsao=saida_erro)
+    elif selecao == "analitico":
+        canal['PRODUTO'] = canal['PRODUTO'].apply(lambda x: str(x).replace("VLA",""))
+        canal['PRODUTO'] = canal['PRODUTO'].apply(lambda x: str(x).replace("VL",""))
+        canal_sem_espaco = canal.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+        codigo_canal_cliente = canal_cliente.iloc[0]['CANAL']
+        canal_geral = canal_sem_espaco.loc[(canal.CANAL == codigo_canal_cliente)]
+        lista_cliente = canal_cliente['PRODUTO'].tolist()
+        lista_canal = canal_geral['PRODUTO'].tolist()
+        codigo_cliente_saida = canal_cliente.iloc[0]['COD_CLIENTE']
+        codigo_vendedor = canal_cliente.iloc[0]['COD_VENDEDOR']
+        nome_cliente = canal_cliente.iloc[0]['CLIENTE']
+        canal_cliente = canal_cliente.iloc[0]['CANAL']
+        lista_unica = list(set(lista_cliente))
+        lista_unica_ordenada = sorted(lista_unica)
+        lista_unica_canal = list(set(lista_canal))
+        lista_unica_canal_ordenada = sorted(lista_unica_canal)
+        lista_final = list(set(lista_unica_canal_ordenada) - set(lista_unica_ordenada))
+        lista_final_ordenada = sorted(lista_final)
+        data_atual = date.today()
+        data_em_texto = data_atual.strftime('%d/%m/%Y')
+        codigo_vendedor_log = str(codigo_vendedor)
+        codigo_cliente_log = str(codigo_cliente_saida)
+        arquivo = open('log.txt','a')
+        arquivo.write(codigo_cliente_log + ';' + codigo_vendedor_log + ';' + data_em_texto + "\n")
+        arquivo.close()
+        return render_template("resultadolista.html",previsao=lista_final_ordenada, teste=lista_unica_ordenada, codigo = codigo_cliente_saida, nome = nome_cliente, canal= canal_cliente)
+    elif selecao == "top":
+        canal['VALOR_VENDA'] = canal['VALOR_VENDA'].apply(lambda x: str(x).replace(",","."))
+        canal['VALOR_VENDA'] = canal['VALOR_VENDA'].astype('float64')
+        canal['PRODUTO'] = canal['PRODUTO'].apply(lambda x: str(x).replace("VLA",""))
+        canal['PRODUTO'] = canal['PRODUTO'].apply(lambda x: str(x).replace("VL",""))
+        canal_sem_espaco = canal.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+        codigo_canal_cliente = canal_cliente.iloc[0]['CANAL']
+        canal_geral = canal_sem_espaco.loc[(canal.CANAL == codigo_canal_cliente)]
+        lista_cliente = canal_cliente['PRODUTO'].tolist()
+        canal_cliente = canal_cliente.drop_duplicates(subset='PRODUTO')
+        # exclcuido produtos do cliente no frame canal
+        lista_exclusao = canal_cliente['PRODUTO'].tolist()
+        df_saida = canal_geral.loc[~canal_geral['PRODUTO'].isin(lista_exclusao)]
+        # ordenando frame
+        colunas = ['PRODUTO','VALOR_VENDA']
+        frame_agrupado = df_saida.filter(items=colunas)
+        frame_agrupado = frame_agrupado.groupby(["PRODUTO"], as_index=False).sum()
+        frame_ordenado = frame_agrupado.sort_values(by=['VALOR_VENDA'], ascending=False,)
+        frame_final = frame_ordenado.head(10)
+        lista_unica_canal = frame_final['PRODUTO'].tolist()
+        lista_unica = list(set(lista_cliente))
+        lista_unica_ordenada = sorted(lista_unica)
+        codigo_cliente_saida = canal_cliente.iloc[0]['COD_CLIENTE']
+        codigo_vendedor = canal_cliente.iloc[0]['COD_VENDEDOR']
+        nome_cliente = canal_cliente.iloc[0]['CLIENTE']
+        canal_cliente = canal_cliente.iloc[0]['CANAL']
+        data_atual = date.today()
+        data_em_texto = data_atual.strftime('%d/%m/%Y')
+        codigo_vendedor_log = str(codigo_vendedor)
+        codigo_cliente_log = str(codigo_cliente_saida)
+        arquivo = open('log.txt','a')
+        arquivo.write(codigo_cliente_log + ';' + codigo_vendedor_log + ';' + data_em_texto + "\n")
+        arquivo.close()
+        return render_template("resultadolistatop.html",previsao=lista_unica_canal, teste=lista_unica_ordenada, codigo = codigo_cliente_saida, nome = nome_cliente, canal= canal_cliente)
+    else:
+         codigo_canal_cliente = canal_cliente.iloc[0]['CANAL']
+         canal_grupo = canal.loc[(canal.CANAL == codigo_canal_cliente)]
+         limpa_grupo_cliente = canal_cliente['GRUPO_DE_PRODUTO'].str.replace(r"\(.*\)","")
+         lista_grupo_corrigido_cliente = limpa_grupo_cliente.tolist()
+         limpa_grupo_canal = canal_grupo['GRUPO_DE_PRODUTO'].str.replace(r"\(.*\)","")
+         lista_grupo_corrigido_canal = limpa_grupo_canal.tolist()
+         codigo_cliente_saida = canal_cliente.iloc[0]['COD_CLIENTE']
+         codigo_vendedor = canal_cliente.iloc[0]['COD_VENDEDOR']
+         nome_cliente = canal_cliente.iloc[0]['CLIENTE']
+         canal_cliente = canal_cliente.iloc[0]['CANAL']
+         lista_unica = list(set(lista_grupo_corrigido_cliente))
+         lista_unica_ordenada = sorted(lista_unica)
+         lista_unica_canal = list(set(lista_grupo_corrigido_canal))
+         lista_unica_canal_ordenada = sorted(lista_unica_canal)
+         lista_final = list(set(lista_unica_canal_ordenada) - set(lista_unica_ordenada))
+         lista_final_ordenada = sorted(lista_final)
+         data_atual = date.today()
+         data_em_texto = data_atual.strftime('%d/%m/%Y')
+         codigo_vendedor_log = str(codigo_vendedor)
+         codigo_cliente_log = str(codigo_cliente_saida)
+         arquivo = open('log.txt','a')
+         arquivo.write(codigo_cliente_log + ';' + codigo_vendedor_log + ';' + data_em_texto + "\n")
+         arquivo.close()
+         return render_template("resultadolista.html",previsao=lista_final_ordenada, teste=lista_unica_ordenada, codigo = codigo_cliente_saida, nome = nome_cliente, canal= canal_cliente)

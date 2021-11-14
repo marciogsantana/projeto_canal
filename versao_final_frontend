@@ -1,0 +1,267 @@
+###########  formulario de dados
+v<!doctype html>
+<html>
+   <body>
+       <style type="text/css">
+         .container {
+          margin: auto;
+          max-width: 1500px;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-between;
+
+          padding-right: 50px;
+          background-color: #2b4c99;
+          color: #fff;
+          font-family: arial;
+          font-size: 50px;
+        }
+           .container ul {
+          list-style-type: none;
+        }
+
+          .container ul li {
+           margin-top: 7px;
+           padding-bottom: 3px;
+           border-bottom: 1px solid #266fc5;
+         }
+
+         .container input {
+
+            font-size:45px
+
+         }
+
+         .container select{
+
+            font-size:50px
+
+         }
+
+
+
+
+
+      </style>
+        <div class="container">
+         <div>
+            <ul>
+               <img id="python" src="../static/img/logo.jpg">
+               <p></p> <h4>Sugestão de produtos por canal</h4>
+
+               <h4>Informe o código do cliente:</h4>
+               <form action="/classifica_iris">
+                   <input type="number" id="codigo" name="codigo_cliente" placeholder="digite o código do cliente" size="10" required><br>
+                     <h4>Selecione a opção:</h4>
+                     <h7>Analítico para produto a produto.</h7>
+                     <br>
+                     <h7>Sintético para grupos de produtos.</h7>
+                     <br>
+                     <h7>Top 10 dos produtos mais vendidos pelo canal.</h7>
+                     <br>
+                     <br>
+                        <select id= "opcao" name="opcao" required>
+                          <option value="" >Selecionar</option>
+                          <option value="analitico" >Analítico</option>
+                          <option value="sintetico" >Sintético</option>
+                          <option value="top" >Top 10</option>
+                        </select>
+                        <p></p>
+                  <input type="submit" value="Consultar">
+
+               </form>
+
+               <h5>Clicando em "Consultar" será gerado o relatório.</h5>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+
+
+            </ul>
+         </div>
+
+        </div>
+
+
+   </body>
+</html>
+
+
+##############################saida de dados analitico e sintetico
+<!doctype html>
+<html>
+   <body>
+       <style type="text/css">
+         .container {
+          margin: auto;
+          max-width: 1200px;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-between;
+
+          padding-right: 35px;
+          background-color: #2b4c99;
+          color: #fff;
+          font-family: arial;
+          font-size: 22px;
+        }
+           .container ul {
+          list-style-type: none;
+        }
+
+          .container ul li {
+           margin-top: 7px;
+           padding-bottom: 3px;
+           border-bottom: 1px solid #266fc5;
+         }
+
+      </style>
+        <div class="container">
+          <div>
+           <ul>
+               <h4>CLIENTE: {{ codigo }}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               <h4> {{ nome }}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               <h4>CANAL: <mark>{{ canal }}</mark>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               <h4>PRODUTOS COMPRADOS &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               {% for teste in teste %}
+                 <li>{{teste}}</li>
+                     {% endfor %}
+
+           </ul>
+         </div>
+          <div>
+           <ul>
+               <h4>PRODUTOS COMPRADOS PELO CANAL <mark>{{ canal }}</mark> QUE SEU CLIENTE NÃO ESTA COMPRANDO</h4>
+               {% for previsao in previsao %}
+                 <li>{{previsao}} </li>
+                     {% endfor %}
+               <h4><mark>OPORTUNIDADE DE VENDA!!</mark> </h4>
+           </ul>
+          </div>
+
+        </div>
+
+
+   </body>
+</html>
+######################################### saida de dados top
+<!doctype html>
+<html>
+   <body>
+       <style type="text/css">
+         .container {
+          margin: auto;
+          max-width: 1200px;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-between;
+
+          padding-right: 35px;
+          background-color: #2b4c99;
+          color: #fff;
+          font-family: arial;
+          font-size: 22px;
+        }
+           .container ul {
+          list-style-type: none;
+        }
+
+          .container ul li {
+           margin-top: 7px;
+           padding-bottom: 3px;
+           border-bottom: 1px solid #266fc5;
+         }
+
+      </style>
+        <div class="container">
+          <div>
+           <ul>
+               <h4>CLIENTE: {{ codigo }}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               <h4> {{ nome }}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               <h4>CANAL: <mark>{{ canal }}</mark>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               <h4>PRODUTOS COMPRADOS &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</h4>
+               {% for teste in teste %}
+                 <li>{{teste}}</li>
+                     {% endfor %}
+
+           </ul>
+         </div>
+          <div>
+           <ul>
+               <h4>TOP 10 PRODUTOS COMPRADOS PELO CANAL <mark>{{ canal }}</mark> QUE SEU CLIENTE NÃO ESTA COMPRANDO</h4>
+               {% for previsao in previsao %}
+                 <li>{{previsao}} </li>
+                     {% endfor %}
+               <h4><mark>OPORTUNIDADE DE VENDA!!</mark> </h4>
+           </ul>
+          </div>
+
+        </div>
+
+
+   </body>
+</html>
+######################################### saida itens nao encontrado
+
+<!doctype html>
+<html>
+   <body>
+       <style type="text/css">
+         .container {
+          margin: auto;
+          max-width: 1500px;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-between;
+
+          padding-right: 35px;
+          background-color: #2b4c99;
+          color: #fff;
+          font-family: arial;
+          font-size: 30px;
+        }
+           .container ul {
+          list-style-type: none;
+        }
+
+          .container ul li {
+           margin-top: 7px;
+           padding-bottom: 3px;
+           border-bottom: 1px solid #266fc5;
+         }
+
+      </style>
+        <div class="container">
+          <div>
+           <ul>
+               <img id="python" src="../static/img/logo.jpg">
+
+               <h3> {{ previsao }}</h3>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+               <br>
+
+
+
+
+
+
+           </ul>
+         </div>
+
+        </div>
+
+
+   </body>
+</html>
